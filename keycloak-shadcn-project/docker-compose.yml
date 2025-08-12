@@ -1,0 +1,35 @@
+# This Docker Compose file builds and runs your custom Keycloak image.
+# The 'version' attribute is no longer needed in modern Docker Compose.
+
+services:
+  keycloak:
+    # This 'build' command tells Docker Compose to build the Dockerfile
+    # in the current directory (.) before starting the service.
+    # This replaces the need for 'docker build -t keycloak-shadcn .'
+    build:
+      context: .
+
+    # A friendly name for your running container.
+    container_name: keycloak-shadcn
+
+    # Maps port 8080 on your local machine to port 8080 in the container.
+    ports:
+      - "8080:8080"
+
+    # Sets the initial admin credentials for Keycloak.
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HTTP_PORT=8080
+
+    # This is a critical addition for development.
+    # It creates a persistent volume to store Keycloak's data (realms, users, etc.).
+    # Without this, you would lose all your configurations every time you restart.
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
+# Declares the named volume used above to ensure data persistence.
+volumes:
+  keycloak_data:
+    driver: local
